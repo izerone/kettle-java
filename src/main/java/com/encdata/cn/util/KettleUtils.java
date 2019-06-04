@@ -2,6 +2,7 @@
 package com.encdata.cn.util;
 
 import com.encdata.cn.dto.DataBaseInfo;
+import com.encdata.cn.plugins.HiveTableOutputMeta;
 
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -33,13 +34,15 @@ public class KettleUtils {
   
   public static String transName = "input_output_lihao_10";
   
-  public static String sourceTableColumns = "id,name";
+  public static String sourceTableColumns = "";
   
-  public static String sourceTableName = "t1";
+  public static String[] columns = new String[13];
+  
+  public static String sourceTableName = "table1";
   
   public static String targetTableColumns = "id,name";
   
-  public static String targetTableName = "t1";
+  public static String targetTableName = "table1";
   
   public static DatabaseMeta sourceDatabaseMeta;
   
@@ -65,6 +68,17 @@ public class KettleUtils {
           "<username>root</username>" +
           "<password>123456</password>" +
           "</connection>",
+          /*"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+              "<connection>" +
+              "<name>kettle</name>" +
+              "<server>10.37.149.117</server>" +
+              "<type>Oracle</type>" +
+              "<access>Native</access>" +
+              "<database>orcl2</database>" +
+              "<port>1521</port>" +
+              "<username>lihao1</username>" +
+              "<password>lihao1</password>" +
+              "</connection>"*/
   /*"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
           "<connection>" +
           "<name>kettle</name>" +
@@ -99,6 +113,17 @@ public class KettleUtils {
   public static PluginRegistry registry = PluginRegistry.getInstance();
   
   public static KettleDatabaseRepository getConn() {
+    
+    for (int i=1;i<14;i++) {
+      sourceTableColumns += "name" + i;
+      if (i != 13) {
+        sourceTableColumns += ",";
+      }
+    }
+    
+    for (int i=1;i<14;i++) {
+      columns[i-1]="name" + i;
+    }
     
     System.out.println("Starting--环境初始化");
     
@@ -202,7 +227,7 @@ public class KettleUtils {
         transMeta.addDatabase(databaseMeta);
       }
       
-      getTbaleInput();
+      getTableInput();
       
       //getSystemDataMeta();
       
@@ -227,7 +252,7 @@ public class KettleUtils {
     return transMeta;
   } 
   
-  public static void getTbaleInput() {
+  public static void getTableInput() {
     
     System.out.println("Starting--表输入插件");
     
@@ -238,7 +263,7 @@ public class KettleUtils {
     DatabaseMeta database_bjdt = transMeta.findDatabase("bjdt");
     tableInput.setDatabaseMeta(database_bjdt);
     String select_sql =
-        " SELECT id,name " + " FROM t1";
+        " SELECT " + sourceTableColumns + " FROM t1";
     tableInput.setSQL(select_sql);
 
     // 添加TableInputMeta到转换中
@@ -291,7 +316,10 @@ public class KettleUtils {
     
     System.out.println("Starting--表输出插件");
     
-    TableOutputMeta tableOutput = new TableOutputMeta();
+    //TableOutputMeta tableOutput = new TableOutputMeta();
+    
+    HiveTableOutputMeta tableOutput = new HiveTableOutputMeta();
+    
     String tableOutputPluginId = registry.getPluginId(StepPluginType.class, tableOutput);
     
     // 给表输出添加一个DatabaseMeta连接数据库
@@ -299,13 +327,18 @@ public class KettleUtils {
     
     tableOutput.setDatabaseMeta(database_kettle);
     
-    tableOutput.setTableName(targetTableName);
-    tableOutput.setFieldDatabase(new String[]{"id11","name11"});
-    tableOutput.setFieldStream(new String[]{"id1","name1"});
+    tableOutput.setTableName("t2");
+    
+    System.out.println("aaaa");
+    
+    tableOutput.setFieldDatabase(columns);
+    tableOutput.setFieldStream(columns);
 
+    System.out.println("bbbb");
+    
     // 添加TableInputMeta到转换中
     tableOutputMetaStep = new StepMeta(tableOutputPluginId, targetTableName + "_table_output", tableOutput);
-
+ 
     transMeta.addStep(tableOutputMetaStep);
     
     System.out.println("Endinging--获取表输出插件");

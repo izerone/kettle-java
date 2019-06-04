@@ -147,13 +147,13 @@ public class SecondTransDemo {
     tableInput.setSQL(select_sql);
 
     // 添加TableInputMeta到转换中
-    StepMeta tableInputMetaStep = new StepMeta(tableInputPluginId, "table input", tableInput);
+    //StepMeta tableInputMetaStep = new StepMeta(tableInputPluginId, "table input", tableInput);
 
     // 给步骤添加在spoon工具中的显示位置
-    tableInputMetaStep.setDraw(true);
-    tableInputMetaStep.setLocation(100, 100);
+    //tableInputMetaStep.setDraw(true);
+    //tableInputMetaStep.setLocation(100, 100);
 
-    transMeta.addStep(tableInputMetaStep);
+    //transMeta.addStep(tableInputMetaStep);
 
     System.out.println("Starting--获取输出插件");
     
@@ -181,7 +181,7 @@ public class SecondTransDemo {
 
     // ******************************************************************
     // 添加hop把两个步骤关联起来
-    transMeta.addTransHop(new TransHopMeta(tableInputMetaStep, tableOutputMetaStep));
+    //transMeta.addTransHop(new TransHopMeta(tableInputMetaStep, tableOutputMetaStep));
     System.out.println("***********the end************");
     
     // 开始执行转换
